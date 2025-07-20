@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Academic Performance</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+    
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff; /* bg-gray-100 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.5s ease;
+        }
+
+        #container {
+            background-color: #fbaaff; /* bg-white */
+            padding: 2rem;
+            border-radius: 0.75rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            width: 95%;
+            max-width: 1000px; /* Increased max-width */
+            transition: box-shadow 0.3s ease;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: #21033e; /* text-gray-900 */
+            margin-bottom: 1.5rem; /* mb-6 */
+            text-align: center; /* Center heading */
+            font-size: 2.25rem;  /* text-3xl */
+            font-weight: 600; /* font-semibold */
+        }
+
+        .input-container {
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem; /* mb-2 */
+            color: #550000; /* text-gray-600 */
+            font-weight: 700;
+            font-size: 0.875rem; /* text-sm */
+        }
+
+        input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 0.75rem; /* py-3, px-4 */
+            border-radius: 0.375rem; /* rounded-md */
+            border: 1px solid #9705b5; /* border-gray-300 */
+            margin-bottom: 1rem; /* mb-4 */
+            font-size: 1rem; /* text-base */
+            transition: border-color 0.3s ease;
+            box-sizing: border-box; /* Ensure padding doesn't affect width */
+
+        }
+        input:hover {
+            color: rgb(11, 2, 250);
+            border: #ff0537;
+            border-width: 10px;
+            
+        }
+
+        input[type="text"]:focus, input[type="date"]:focus {
+            outline: none;
+            border-color: #3b82f6; /* border-blue-500 */
+            box-shadow: 0 0 0 3px rgba(14, 70, 159, 0.15); /* ring-blue-500, ring-opacity-20 */
+        }
+
+        button {
+            padding: 0.75rem 1.5rem; /* py-3 px-6 */
+            border-radius: 0.375rem; /* rounded-md */
+            background-color: #3b82f6; /* bg-blue-500 */
+            color: #ffffff; /* text-white */
+            font-weight: 600; /* font-semibold */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 1rem; /* text-base */
+            border: none;
+            display: block;
+            margin: 0 auto; /* Center the button */
+            width: fit-content; /* Adjust width to content */
+        }
+
+        button:hover {
+            background-color:rgb(67, 0, 94); /* bg-blue-700 */
+            transform: translateY(-2px); /* Slightly lift on hover */
+            color: #ffc0fb;
+        }
+
+        button:active {
+            background-color: #1e40af; /* bg-blue-800 */
+            transform: translateY(0);
+            
+        }
+
+        #student-data {
+            padding: 1.5rem; /* py-6 px-8 */
+            border-radius: 0.375rem; /* rounded-md */
+            border: 1px solid #182030; /* border-gray-200 */
+            margin-bottom: 1.5rem; /* mb-6 */
+            background-color: #ffffff; /* bg-gray-50 */
+            display: none; /* Hidden by default */
+            transition: all 0.3s ease;
+        }
+
+        #student-data h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem; /* mb-6 */
+            color: #1e293b; /* text-gray-900 */
+            font-size: 1.875rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+        }
+
+        #student-data p {
+            margin-bottom: 0.75rem; /* mb-3 */
+            color: #1a2738; /* text-gray-600 */
+            font-size: 1rem;
+        }
+
+        #student-data strong {
+            color: #1e293b; /* text-gray-900 */
+            font-weight: 600;
+        }
+
+        #subjectMarks {
+            list-style-position: inside;
+            padding-left: 0;
+            margin-bottom: 1.5rem; /* mb-6 */
+            font-size: 1rem;
+            color: #000000;
+        }
+
+        #subjectMarks li {
+            margin-bottom: 0.375rem; /* mb-1.5 */
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-top: 1.5rem; /* mb-6 */
+            border-radius: 0.375rem;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            background-color: #fff;
+        
+        }
+
+        #prediction {
+            padding: 1.5rem; /* py-6 px-8 */
+            border-radius: 0.375rem; /* rounded-md */
+            border: 1px solid #091630; /* border-gray-200 */
+            background-color: #ffffff; /* bg-gray-50 */
+            margin-top: 1.5rem; /* mb-6 */
+            display: none;
+            transition: all 0.5s ease;
+        }
+
+        #prediction h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem; /* mb-6 */
+            color: #1e293b; /* text-gray-900 */
+            font-size: 1.875rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+        }
+
+        #prediction p {
+            margin-bottom: 0.75rem; /* mb-3 */
+            color: #4b5563; /* text-gray-600 */
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            #container {
+                width: 98%;
+                padding: 1.5rem;
+            }
+            .chart-container {
+                height: 250px;
+            }
+            h1{
+                font-size: 2rem;
+            }
+            #student-data h2, #prediction h2{
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 640px){
+            input[type="text"], input[type="date"]{
+                font-size: 0.9rem;
+                padding: 0.75rem;
+            }
+            button{
+                font-size: 0.9rem;
+                padding: 0.75rem 1rem;
+            }
+            #student-data p, #prediction p, #subjectMarks li{
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>STUDENT ACADEMIC PERFORMANCE</h1>
+
+        <div class="input-container">
+            <label for="studentId">Student ID:</label>
+            <input type="text" id="studentId" placeholder="Enter Student ID">
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob">
+            <button onclick="findStudentData()">SUBMIT</button>
+        </div>
+
+        <div id="student-data">
+            <h2>STUDENT INFORMATION</h2>
+            <p><strong>Name:</strong> <span id="studentName"></span></p>
+            <p><strong>Age:</strong> <span id="studentAge"></span></p>
+            <p><strong>Gender:</strong> <span id="studentGender"></span></p>
+            <p><strong>Overall Grade:</strong> <span id="overallGrade"></span></p>
+            <p><strong>Attendance:</strong> <span id="attendance"></span>%</p>
+            <p><strong>Overall Performance:</strong> <span id="overallPerformance"></span></p>
+            <p><strong>Extracurricular:</strong> <span id="extracurricular"></span></p>
+            <h3>SUBJECT MARKS:</h3>
+            <ul id="subjectMarks"></ul>
+            <div class="chart-container">
+                <canvas id="marksChart"></canvas>
+            </div>
+        </div>
+
+        <div id="prediction">
+            <h2>FUTURE PREDICTION</h2>
+            <p><strong>Predicted Attendance:</strong> <span id="predictedAttendance"></span>%</p>
+            <p><strong>Predicted Grade:</strong> <span id="predictedGrade"></span></p>
+        </div>
+    </div>
+
+    <script>
+        const studentsData = [
+            { StudentID: "S001", DOB: "2005-07-12", Name: "Priya dharshini", Age: 19, Gender: "Female", "Subject Marks": { Math: 85, Science: 92, English: 78, History: 88, "Computer Science": 95 }, "Overall Grade": "A", Attendance: 92.5, "Overall Performance": "Excellent", Extracurricular: "Sports  " },
+            { StudentID: "S002", DOB: "2004-11-19", Name: "Nachammai", Age: 19, Gender: "Female", "Subject Marks": { Math: 70, Science: 75, English: 82 }, "Overall Grade": "B", Attendance: 88.0, "Overall Performance": "Good", Extracurricular: "Sports" },
+            { StudentID: "S003", DOB: "2008-01-10", Name: "Charlie Brown", Age: 17, Gender: "Male", "Subject Marks": { Math: 60, Science: 65, English: 70, History: 62, "Computer Science": 55 }, "Overall Grade": "C", Attendance: 80.5, "Overall Performance": "Average", Extracurricular: "Coding Club" },
+            { StudentID: "S004", DOB: "2007-07-05", Name: "Diana Lee", Age: 18, Gender: "Female", "Subject Marks": { Science: 90, English: 94, History: 85 }, "Overall Grade": "A+", Attendance: 95.0, "Overall Performance": "Excellent", Extracurricular: "Music" },
+            { StudentID: "S005", DOB: "2006-09-28", Name: "Ethan Williams", Age: 19, Gender: "Male", "Subject Marks": { Math: 78, History: 72, "Computer Science": 80 }, "Overall Grade": "B+", Attendance: 90.0, "Overall Performance": "Good", Extracurricular: "Drama" },
+            { StudentID: "S006", DOB: "2008-04-01", Name: "Fiona Garcia", Age: 17, Gender: "Female", "Subject Marks": { Math: 55, Science: 60, English: 68, History: 58 }, "Overall Grade": "C-", Attendance: 78.0, "Overall Performance": "Needs Improvement", Extracurricular: "Debate Club" },
+            { StudentID: "S007", DOB: "2007-12-12", Name: "George Miller", Age: 18, Gender: "Male", "Subject Marks": { Science: 88, English: 80, "Computer Science": 92 }, "Overall Grade": "A-", Attendance: 93.5, "Overall Performance": "Excellent", Extracurricular: "Sports" },
+            { StudentID: "S008", DOB: "2006-08-18", Name: "Hannah Davis", Age: 19, Gender: "Female", "Subject Marks": { Math: 72, History: 78 }, "Overall Grade": "B", Attendance: 86.5, "Overall Performance": "Good", Extracurricular: "Coding Club" },
+            { StudentID: "S009", DOB: "2008-02-25", Name: "Ian Rodriguez", Age: 17, Gender: "Male", "Subject Marks": { Math: 65, Science: 70, English: 62, "Computer Science": 75 }, "Overall Grade": "C+", Attendance: 82.0, "Overall Performance": "Average", Extracurricular: "Music" },
+            { StudentID: "S010", DOB: "2007-06-01", Name: "Jane Wilson", Age: 18, Gender: "Female", "Subject Marks": { Science: 95, English: 88, History: 92 }, "Overall Grade": "A+", Attendance: 96.0, "Overall Performance": "Excellent", Extracurricular: "Drama" },
+            { StudentID: "S011", DOB: "2006-10-05", Name: "Kevin Moore", Age: 19, Gender: "Male", "Subject Marks": { Math: 80, History: 85, "Computer Science": 78 }, "Overall Grade": "A-", Attendance: 91.0, "Overall Performance": "Excellent", Extracurricular: "Debate Club" },
+            { StudentID: "S012", DOB: "2008-03-20", Name: "Linda Taylor", Age: 17, Gender: "Female", "Subject Marks": { Math: 68, Science: 72, English: 75 }, "Overall Grade": "B-", Attendance: 84.5, "Overall Performance": "Average", Extracurricular: "Sports" },
+            { StudentID: "S013", DOB: "2007-09-10", Name: "Michael Clark", Age: 18, Gender: "Male", "Subject Marks": { Math: 50, Science: 58, English: 60, History: 55, "Computer Science": 62 }, "Overall Grade": "D+", Attendance: 79.5, "Overall Performance": "Needs Improvement", Extracurricular: "Coding Club" },
+            { StudentID: "S014", DOB: "2006-12-01", Name: "Nancy Lewis", Age: 19, Gender: "Female", "Subject Marks": { Science: 85, English: 90, History: 88 }, "Overall Grade": "A", Attendance: 94.0, "Overall Performance": "Excellent", Extracurricular: "Music" },
+            { StudentID: "S015", DOB: "2008-01-28", Name: "Oliver Hall", Age: 17, Gender: "Male", "Subject Marks": { Math: 75, History: 80, "Computer Science": 85 }, "Overall Grade": "B+", Attendance: 89.0, "Overall Performance": "Good", Extracurricular: "Drama" },
+            { StudentID: "S016", DOB: "2007-05-15", Name: "Patricia Young", Age: 18, Gender: "Female", "Subject Marks": { Math: 62, Science: 68, English: 70, History: 65 }, "Overall Grade": "C", Attendance: 81.0, "Overall Performance": "Average", Extracurricular: "Debate Club" },
+            { StudentID: "S017", DOB: "2006-09-01", Name: "Robert Allen", Age: 19, Gender: "Male", "Subject Marks": { Science: 92, English: 85, "Computer Science": 90 }, "Overall Grade": "A", Attendance: 93.0, "Overall Performance": "Excellent", Extracurricular: "Sports" },
+            { StudentID: "S018", DOB: "2008-04-10", Name: "Susan Wright", Age: 17, Gender: "Female", "Subject Marks": { Math: 70, History: 75 }, "Overall Grade": "B", Attendance: 87.5, "Overall Performance": "Good", Extracurricular: "Coding Club" },
+            { StudentID: "S019", DOB: "2007-11-05", Name: "Thomas King", Age: 18, Gender: "Male", "Subject Marks": { Math: 58, Science: 62, English: 65, "Computer Science": 70 }, "Overall Grade": "C-", Attendance: 77.0, "Overall Performance": "Needs Improvement", Extracurricular: "Music" },
+            { StudentID: "S020", DOB: "2006-07-20", Name: "Ursula Green", Age: 19, Gender: "Female", "Subject Marks": { Science: 98, English: 92, History: 95 }, "Overall Grade": "A+", Attendance: 97.0, "Overall Performance": "Excellent", Extracurricular: "Drama" },
+            { StudentID: "S021", DOB: "2007-02-01", Name: "Victor Baker", Age: 18, Gender: "Male", "Subject Marks": { Math: 82, History: 88, "Computer Science": 80 }, "Overall Grade": "A-", Attendance: 90.5, "Overall Performance": "Excellent", Extracurricular: "Debate Club" },
+            { StudentID: "S022", DOB: "2006-08-25", Name: "Wendy Adams", Age: 19, Gender: "Female", "Subject Marks": { Math: 73, Science: 78, English: 80 }, "Overall Grade": "B+", Attendance: 88.5, "Overall Performance": "Good", Extracurricular: "Sports" },
+            { StudentID: "S023", DOB: "2008-03-10", Name: "Xavier Carter", Age: 17, Gender: "Male", "Subject Marks": { Math: 60, Science: 68, English: 62, History: 65, "Computer Science": 58 }, "Overall Grade": "C", Attendance: 81.5, "Overall Performance": "Average", Extracurricular: "Coding Club" },
+            { StudentID: "S024", DOB: "2007-06-25", Name: "Yara Hill", Age: 18, Gender: "Female", "Subject Marks": { Science: 88, English: 94, History: 90 }, "Overall Grade": "A", Attendance: 95.5, "Overall Performance": "Excellent", Extracurricular: "Music" },
+            { StudentID: "S025", DOB: "2006-11-10", Name: "Zane Nelson", Age: 19, Gender: "Male", "Subject Marks": { Math: 78, History: 72, "Computer Science": 82 }, "Overall Grade": "B+", Attendance: 89.5, "Overall Performance": "Good", Extracurricular: "Drama" },
+            { StudentID: "S026", DOB: "2008-01-05", Name: "Ava Perez", Age: 17, Gender: "Female", "Subject Marks": { Math: 55, Science: 60, English: 68, History: 58 }, "Overall Grade": "C-", Attendance: 78.5, "Overall Performance": "Needs Improvement", Extracurricular: "Debate Club" },
+            { StudentID: "S027", DOB: "2007-12-20", Name: "Caleb Lewis", Age: 18, Gender: "Male", "Subject Marks": { Science: 90, English: 82, "Computer Science": 95 }, "Overall Grade": "A", Attendance: 93.0, "Overall Performance": "Excellent", Extracurricular: "Sports" },
+            { StudentID: "S028", DOB: "2006-08-01", Name: "Chloe Walker", Age: 19, Gender: "Female", "Subject Marks": { Math: 72, History: 78 }, "Overall Grade": "B", Attendance: 87.0, "Overall Performance": "Good", Extracurricular: "Coding Club" },
+            { StudentID: "S029", DOB: "2008-02-15", Name: "Daniel Young", Age: 17, Gender: "Male", "Subject Marks": { Math: 65, Science: 70, English: 62, "Computer Science": 75 }, "Overall Grade": "C+", Attendance: 82.5, "Overall Performance": "Average", Extracurricular: "Music" },
+            { StudentID: "S030", DOB: "2007-06-10", Name: "Ella Wright", Age: 18, Gender: "Female", "Subject Marks": { Science: 92, English: 85, History: 90 }, "Overall Grade": "A", Attendance: 96.5, "Overall Performance": "Excellent", Extracurricular: "Drama" },
+            { StudentID: "S031", DOB: "2006-10-15", Name: "Finn Allen", Age: 19, Gender: "Male", "Subject Marks": { Math: 80, History: 85, "Computer Science": 78 }, "Overall Grade": "A-", Attendance: 91.5, "Overall Performance": "Excellent", Extracurricular: "Debate Club" },
+            { StudentID: "S032", DOB: "2008-03-01", Name: "Grace Reed", Age: 17, Gender: "Female", "Subject Marks": { Math: 68, Science: 72, English: 75 }, "Overall Grade": "B-", Attendance: 85.0, "Overall Performance": "Average", Extracurricular: "Sports" },
+            { StudentID: "S033", DOB: "2007-09-20", Name: "Henry Perez", Age: 18, Gender: "Male", "Subject Marks": { Math: 52, Science: 60, English: 60, History: 55, "Computer Science": 65 }, "Overall Grade": "D+", Attendance: 80.0, "Overall Performance": "Needs Improvement", Extracurricular: "Coding Club" },
+            { StudentID: "S034", DOB: "2006-12-05", Name: "Isabella Martinez", Age: 19, Gender: "Female", "Subject Marks": { Science: 87, English: 92, History: 90 }, "Overall Grade": "A", Attendance: 94.5, "Overall Performance": "Excellent", Extracurricular: "Music" },
+            { StudentID: "S035", DOB: "2008-01-20", Name: "Jack Robinson", Age: 17, Gender:"Male", "Subject Marks": { Math: 77, History: 82, "Computer Science": 88 }, "Overall Grade": "B+", Attendance: 90.5, "Overall Performance": "Good", Extracurricular: "Drama" },
+            { StudentID: "S036", DOB: "2007-05-20", Name: "Katherine Green", Age: 18, Gender: "Female", "Subject Marks": { Math: 64, Science: 70, English: 72, History: 68 }, "Overall Grade": "C", Attendance: 82.0, "Overall Performance": "Average", Extracurricular: "Debate Club" },
+            { StudentID: "S037", DOB: "2006-09-05", Name: "Leo Baker", Age: 19, Gender: "Male", "Subject Marks": { Science: 95, English: 88, "Computer Science": 92 }, "Overall Grade": "A", Attendance: 94.0, "Overall Performance": "Excellent", Extracurricular: "Sports" },
+            { StudentID: "S038", DOB: "2008-04-15", Name: "Mia Hall", Age: 17, Gender: "Female", "Subject Marks": { Math: 72, History: 77 }, "Overall Grade": "B", Attendance: 88.0, "Overall Performance": "Good", Extracurricular: "Coding Club" },
+            { StudentID: "S039", DOB: "2007-11-10", Name: "Noah Carter", Age: 18, Gender: "Male", "Subject Marks": { Math: 60, Science: 65, English: 68, "Computer Science": 72 }, "Overall Grade": "C-", Attendance: 78.0, "Overall Performance": "Needs Improvement", Extracurricular: "Music" },
+            { StudentID: "S040", DOB: "2006-07-25", Name: "Olivia Adams", Age: 19, Gender: "Female", "Subject Marks": { Science: 100, English: 95, History: 98 }, "Overall Grade": "A+", Attendance: 97.5, "Overall Performance": "Excellent", Extracurricular: "Drama" },
+            
+        ];
+
+        let studentChart; // To store the chart instance
+
+        function findStudentData() {
+            const studentId = document.getElementById("studentId").value;
+            const dob = document.getElementById("dob").value;
+
+            const student = studentsData.find(s => s.StudentID === studentId && s.DOB === dob);
+
+            if (student) {
+                displayStudentData(student);
+                document.getElementById("student-data").style.display = "block";
+                document.getElementById("prediction").style.display = "block";
+            } else {
+                alert("Student not found. Please check Student ID and Date of Birth.");
+                document.getElementById("student-data").style.display = "none";
+                document.getElementById("prediction").style.display = "none";
+                if (studentChart) {
+                    studentChart.destroy();
+                }
+            }
+        }
+
+        function displayStudentData(student) {
+            document.getElementById("studentName").textContent = student.Name;
+            document.getElementById("studentAge").textContent = student.Age;
+            document.getElementById("studentGender").textContent = student.Gender;
+            document.getElementById("overallGrade").textContent = student["Overall Grade"];
+            document.getElementById("attendance").textContent = student.Attendance;
+            document.getElementById("overallPerformance").textContent = student["Overall Performance"];
+            document.getElementById("extracurricular").textContent = student.Extracurricular;
+
+            const subjectMarksList = document.getElementById("subjectMarks");
+            subjectMarksList.innerHTML = ''; // Clear previous list
+            const subjects = Object.keys(student["Subject Marks"]);
+            const marks = Object.values(student["Subject Marks"]);
+            subjects.forEach(subject => {
+                const li = document.createElement("li");
+                li.textContent = `${subject}: ${student["Subject Marks"][subject]}`;
+                subjectMarksList.appendChild(li);
+            });
+
+            // Display Subject Marks Chart
+            displaySubjectMarksChart(subjects, marks);
+
+            // Display Prediction
+            displayPrediction(student.Attendance, student["Overall Grade"]);
+        }
+
+        function displaySubjectMarksChart(subjects, marks) {
+            const ctx = document.getElementById('marksChart').getContext('2d');
+            if (studentChart) {
+                studentChart.destroy();
+            }
+
+            studentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: subjects,
+                    datasets: [{
+                        label: 'Subject Marks',
+                        data: marks,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Subject-wise Marks',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return value;  // convert it to string
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function displayPrediction(attendance, grade) {
+            let predictedAttendance = attendance + 2;
+            let predictedGrade = grade;
+
+            if (attendance >= 90) {
+                predictedAttendance = Math.min(predictedAttendance, 100);
+                if (grade === "B") {
+                    predictedGrade = "A-";
+                } else if (grade === "C+") {
+                    predictedGrade = "B";
+                } else if (grade === "C") {
+                    predictedGrade = "C+";
+                }
+            } else if (attendance >= 80 && attendance < 90) {
+                predictedAttendance = Math.min(predictedAttendance, 95);
+                if (grade === "C") {
+                  predictedGrade = "B-";
+                }
+            } else {
+                predictedAttendance = Math.min(predictedAttendance, 85);
+                if(grade === "D+"){
+                    predictedGrade = "C";
+                }
+            }
+            document.getElementById("predictedAttendance").textContent = predictedAttendance.toFixed(2);
+            document.getElementById("predictedGrade").textContent = predictedGrade;
+        }
+    </script>
+</body>
+</html>
